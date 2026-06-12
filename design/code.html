@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Voltage &amp; Ink | Simple Band Sheet Creator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700;800&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .editor-line-active {
+            background: rgba(250, 204, 21, 0.05);
+            border-left: 4px solid #FACC15;
+        }
+
+        /* Custom Scrollbar for dark tech aesthetic */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #171309; }
+        ::-webkit-scrollbar-thumb { background: #393428; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FACC15; }
+
+        .chord-chip-active {
+            border-left: 3px solid #4ADE80;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error": "#ffb4ab",
+                      "on-background": "#ebe2d0",
+                      "on-primary-container": "#6c5700",
+                      "on-tertiary-fixed": "#001f25",
+                      "secondary": "#4de082",
+                      "surface-container": "#231f14",
+                      "tertiary": "#c7f5ff",
+                      "inverse-primary": "#735c00",
+                      "on-secondary": "#003919",
+                      "tertiary-container": "#33e4ff",
+                      "background": "#171309",
+                      "on-primary-fixed-variant": "#574500",
+                      "surface-variant": "#393428",
+                      "on-tertiary-container": "#006270",
+                      "surface-container-highest": "#393428",
+                      "error-container": "#93000a",
+                      "on-surface": "#ebe2d0",
+                      "outline": "#9a9078",
+                      "on-secondary-fixed": "#00210c",
+                      "inverse-on-surface": "#353024",
+                      "on-surface-variant": "#d1c6ab",
+                      "surface-container-lowest": "#110e05",
+                      "primary-container": "#facc15",
+                      "on-primary": "#3c2f00",
+                      "outline-variant": "#4d4632",
+                      "on-secondary-fixed-variant": "#005227",
+                      "on-tertiary-fixed-variant": "#004e59",
+                      "surface": "#171309",
+                      "tertiary-fixed-dim": "#15daf4",
+                      "surface-tint": "#eec200",
+                      "secondary-fixed": "#6dfe9c",
+                      "surface-container-low": "#1f1b11",
+                      "surface-container-high": "#2e2a1e",
+                      "secondary-container": "#00b55d",
+                      "primary-fixed": "#ffe083",
+                      "secondary-fixed-dim": "#4de082",
+                      "primary-fixed-dim": "#eec200",
+                      "tertiary-fixed": "#a0efff",
+                      "surface-bright": "#3e392d",
+                      "primary": "#ffecb9",
+                      "on-tertiary": "#00363e",
+                      "on-error": "#690005",
+                      "inverse-surface": "#ebe2d0",
+                      "on-error-container": "#ffdad6",
+                      "on-primary-fixed": "#231b00",
+                      "on-secondary-container": "#003e1c",
+                      "surface-dim": "#171309"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-desktop": "32px",
+                      "unit": "4px",
+                      "margin-mobile": "16px",
+                      "editor-padding": "40px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Hanken Grotesk"],
+                      "headline-md": ["Hanken Grotesk"],
+                      "editor-main": ["JetBrains Mono"],
+                      "body-sm": ["Inter"],
+                      "label-caps": ["JetBrains Mono"],
+                      "editor-chord": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "editor-main": ["18px", {"lineHeight": "1.6", "fontWeight": "500"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "editor-chord": ["16px", {"lineHeight": "1.4", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center w-full px-margin-desktop py-4 z-50 sticky top-0">
+<div class="flex items-center gap-8">
+<h1 class="font-display-lg text-display-lg font-extrabold text-primary-fixed-dim tracking-tighter">Voltage &amp; Ink</h1>
+<div class="flex items-center gap-4 bg-surface-container px-4 py-1.5 rounded border border-outline-variant">
+<input class="bg-transparent border-none focus:ring-0 font-editor-main text-primary-fixed-dim placeholder:text-on-surface-variant w-48" placeholder="Song Title" type="text" value="Let It Be"/>
+<div class="h-6 w-px bg-outline-variant"></div>
+<select class="bg-transparent border-none focus:ring-0 font-label-caps text-on-surface-variant appearance-none cursor-pointer">
+<option>KEY: G</option>
+<option>KEY: C</option>
+<option>KEY: D</option>
+</select>
+<div class="h-6 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">speed</span>
+<input class="bg-transparent border-none focus:ring-0 font-label-caps text-on-surface-variant w-12 text-center" type="number" value="76"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-6 py-2 bg-surface-variant text-on-surface-variant font-label-caps text-label-caps border border-outline-variant hover:bg-surface-container-high transition-colors active:scale-95 duration-100">
+                Copy
+            </button>
+<button class="px-6 py-2 bg-primary-container text-on-primary-container font-label-caps text-label-caps font-bold hover:shadow-[0_0_15px_rgba(250,204,21,0.3)] transition-all active:scale-95 duration-100">
+                Export .txt
+            </button>
+</div>
+</header>
+<div class="flex h-[calc(100vh-81px)]">
+<!-- SideNavBar -->
+<aside class="fixed left-0 w-64 h-full bg-surface-container-low border-r border-outline-variant flex flex-col pt-8 pb-8 px-4 z-40">
+<div class="mb-8">
+<p class="font-label-caps text-label-caps text-primary-fixed-dim mb-2 uppercase tracking-widest">Editor Tools</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">V1.0.4-STABLE</p>
+</div>
+<div class="space-y-8 overflow-y-auto pr-2">
+<!-- Sections Category -->
+<div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary-fixed-dim">segment</span>
+<h3 class="font-label-caps text-label-caps text-on-surface">Sections</h3>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="p-2 text-xs font-label-caps bg-surface-container-highest border border-outline-variant text-on-surface hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded-lg active:translate-x-1 duration-200">[Intro]</button>
+<button class="p-2 text-xs font-label-caps bg-surface-container-highest border border-outline-variant text-on-surface hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded-lg active:translate-x-1 duration-200">[Verse]</button>
+<button class="p-2 text-xs font-label-caps bg-primary-container text-on-primary-container font-bold rounded-lg active:translate-x-1 duration-200">[Chorus]</button>
+<button class="p-2 text-xs font-label-caps bg-surface-container-highest border border-outline-variant text-on-surface hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded-lg active:translate-x-1 duration-200">[Solo]</button>
+<button class="p-2 text-xs font-label-caps bg-surface-container-highest border border-outline-variant text-on-surface hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded-lg active:translate-x-1 duration-200">[Bridge]</button>
+<button class="p-2 text-xs font-label-caps bg-surface-container-highest border border-outline-variant text-on-surface hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded-lg active:translate-x-1 duration-200">[Ending]</button>
+</div>
+</div>
+<!-- Chord Pick Category -->
+<div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary-fixed-dim">music_note</span>
+<h3 class="font-label-caps text-label-caps text-on-surface">Chord Pick</h3>
+</div>
+<div class="grid grid-cols-4 gap-2">
+<button class="aspect-square flex items-center justify-center font-editor-chord bg-surface-container-highest border border-outline-variant text-on-surface-variant hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded active:scale-90">G</button>
+<button class="aspect-square flex items-center justify-center font-editor-chord bg-surface-container-highest border border-outline-variant chord-chip-active text-on-surface hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded active:scale-90">C</button>
+<button class="aspect-square flex items-center justify-center font-editor-chord bg-surface-container-highest border border-outline-variant text-on-surface-variant hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded active:scale-90">D</button>
+<button class="aspect-square flex items-center justify-center font-editor-chord bg-surface-container-highest border border-outline-variant chord-chip-active text-on-surface hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded active:scale-90">Em</button>
+<button class="aspect-square flex items-center justify-center font-editor-chord bg-surface-container-highest border border-outline-variant text-on-surface-variant hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded active:scale-90">Am</button>
+<button class="aspect-square flex items-center justify-center font-editor-chord bg-surface-container-highest border border-outline-variant text-on-surface-variant hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded active:scale-90">F</button>
+<button class="aspect-square flex items-center justify-center font-editor-chord bg-surface-container-highest border border-outline-variant text-on-surface-variant hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded active:scale-90">Bm</button>
+<button class="aspect-square flex items-center justify-center font-editor-chord bg-surface-container-highest border border-outline-variant text-on-surface-variant hover:text-primary-fixed-dim hover:bg-surface-variant transition-all rounded active:scale-90">G7</button>
+</div>
+</div>
+<button class="w-full mt-4 py-3 bg-secondary-container text-on-secondary-container font-label-caps text-label-caps font-bold rounded-lg flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+<span class="material-symbols-outlined">add</span>
+                    Add Section
+                </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col relative bg-background overflow-hidden">
+<div class="flex-1 flex overflow-hidden">
+<!-- Left: Interactive Editor -->
+<div class="w-1/2 flex flex-col border-r border-outline-variant bg-surface-container-lowest">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">edit_note</span>
+                            Interactive Editor
+                        </h2>
+<span class="text-[10px] font-label-caps text-outline">UTF-8 CHARS ONLY</span>
+</div>
+<div class="flex-1 p-editor-padding overflow-y-auto font-editor-main text-editor-main leading-relaxed">
+<div class="mb-6 opacity-60 font-bold text-secondary">[Intro]</div>
+<div class="editor-line-active mb-6 pl-4 py-2">
+<span class="text-on-surface">| G | G | Em | Em |</span>
+</div>
+<div class="mb-6 opacity-60 font-bold text-secondary">[Verse 1]</div>
+<div class="space-y-1">
+<div class="text-primary-fixed-dim font-bold tracking-widest">G              Em</div>
+<div class="text-on-surface">When I find myself in times</div>
+<div class="text-primary-fixed-dim font-bold tracking-widest mt-4">C              D</div>
+<div class="text-on-surface">of trouble mother Mary comes to me</div>
+</div>
+<div class="mt-8 border-t border-dashed border-outline-variant pt-4">
+<span class="inline-block w-2 h-5 bg-primary-container animate-pulse align-middle"></span>
+</div>
+</div>
+</div>
+<!-- Right: TXT Preview -->
+<div class="w-1/2 flex flex-col bg-surface-container-low">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">preview</span>
+                            TXT Preview
+                        </h2>
+<span class="text-[10px] font-label-caps text-outline">READ-ONLY</span>
+</div>
+<div class="flex-1 p-editor-padding overflow-y-auto font-editor-main text-sm text-outline opacity-80 select-none">
+<pre>[Intro]
+| G | G | Em | Em |
+
+[Verse 1]
+G              Em
+When I find myself in times
+C              D
+of trouble mother Mary comes to me
+</pre>
+</div>
+</div>
+</div>
+<!-- Floating Toolbar (Bar Line Generator) -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-xl px-4 z-50">
+<div class="glass-panel rounded-full p-2 flex items-center gap-2 shadow-2xl border-primary-fixed-dim/20">
+<div class="bg-primary-container/10 p-2 rounded-full ml-2">
+<span class="material-symbols-outlined text-primary-fixed-dim">straighten</span>
+</div>
+<div class="flex-1 px-4">
+<p class="text-[10px] font-label-caps text-outline mb-1">BAR LINE GENERATOR</p>
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 font-editor-main text-on-surface placeholder:text-on-surface-variant/40" id="barGenerator" placeholder="Type chords (e.g., G G Em)" type="text"/>
+</div>
+<button class="bg-primary-container text-on-primary-container h-10 px-6 rounded-full font-label-caps text-xs font-bold hover:brightness-110 active:scale-95 transition-all">
+                        GENERATE
+                    </button>
+</div>
+</div>
+</main>
+</div>
+<!-- Micro-interaction script -->
+<script>
+        const barInput = document.getElementById('barGenerator');
+        
+        barInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const val = this.value.trim();
+                if (val) {
+                    const bars = val.split(' ').map(chord => `| ${chord} `).join('') + '|';
+                    console.log('Generated Bar:', bars);
+                    // In a real app, this would append to the editor
+                    this.value = '';
+                    
+                    // Simple visual feedback
+                    this.placeholder = "Bar Added!";
+                    setTimeout(() => {
+                        this.placeholder = "Type chords (e.g., G G Em)";
+                    }, 1500);
+                }
+            }
+        });
+
+        // Hover glow effect for primary button
+        const exportBtn = document.querySelector('button.bg-primary-container');
+        exportBtn.addEventListener('mousemove', (e) => {
+            const rect = exportBtn.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            exportBtn.style.boxShadow = `0 0 25px rgba(250, 204, 21, 0.5)`;
+        });
+        exportBtn.addEventListener('mouseleave', () => {
+            exportBtn.style.boxShadow = '';
+        });
+    </script>
+</body></html>
